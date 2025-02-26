@@ -1,0 +1,149 @@
+//A página precisa criar o seguinte Json e permitir a edição de alguns campos
+
+{
+    "name": "insira o nome do template aqui",
+    "language": "pt_BR",
+    "category": "marketing",
+    "components": [
+        {
+            "type": "body",
+            "text": "Qual você deseja contratar?"
+        },
+        {
+            "type": "carousel",
+            "cards": [
+                {
+                    "components": [
+                        {
+                            "type": "header",
+                            "format": "image",
+                            "example": {
+                                "header_handle": [
+// Insira o header_hander criado na ResumableAPI
+                                ]
+                            }
+                        },
+                        {
+                            "type": "body",
+                            "text": "*Proteção Pessoal Básico*\nR$ 19,90 por mês ou R$226,86 por ano (5% de desconto)"
+                        },
+                        {
+                            "type": "buttons",
+                            "buttons": [
+                                {
+                                    "type": "url",
+                                    "text": "Link 1",
+                                    "url": "https://www.bb.com.br"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "components": [
+                        {
+                            "type": "header",
+                            "format": "image",
+                            "example": {
+                                "header_handle": [
+// Insira o header_hander criado na ResumableAPI
+                                ]
+                            }
+                        },
+                        {
+                            "type": "body",
+                            "text": "*Proteção Pessoal Familiar*"
+                        },
+                        {
+                            "type": "buttons",
+                            "buttons": [
+                                {
+                                    "type": "url",
+                                    "text": "Link 1",
+                                    "url": "https://www.bb.com.br"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "components": [
+                        {
+                            "type": "header",
+                            "format": "image",
+                            "example": {
+                                "header_handle": [
+// Insira o header_hander criado na ResumableAPI
+                                ]
+                            }
+                        },
+                        {
+                            "type": "body",
+                            "text": "*Proteção Pessoal Sênior*"
+                        },
+                        {
+                            "type": "buttons",
+                            "buttons": [
+                                {
+                                    "type": "url",
+                                    "text": "Link 1",
+                                    "url": "https://www.bb.com.br"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "components": [
+                        {
+                            "type": "header",
+                            "format": "image",
+                            "example": {
+                                "header_handle": [
+// Insira o header_hander criado na ResumableAPI
+                                ]
+                            }
+                        },
+                        {
+                            "type": "body",
+                            "text": "*Proteção Pessoal Mulher*"
+                        },
+                        {
+                            "type": "buttons",
+                            "buttons": [
+                                {
+                                    "type": "url",
+                                    "text": "Link 1",
+                                    "url": "https://www.bb.com.br"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+}
+
+/*
+-------------------
+
+Campos que serão necessários editar e configurar:
+
+Nome do template
+Texto do Pré Body
+Quantos botões terão nos itens, a ordem dos botões e como serão esses botões (precisa sempre de 1 e no máximo dois) - Os botões podem ser Quick Reply ou Link
+
+quantidade de itens no carrossel (mínimo 3 e máximo 10)
+a ordem dos itens
+
+o body de cada item
+nome do botão
+link do botão(caso link)
+
+-------------
+
+página de exemplo:
+
+Montagem do Componente Call To Action
+*/
