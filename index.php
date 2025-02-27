@@ -64,14 +64,19 @@
         }
     </style>
     <script>
-        let quantidadeBotoesGlobal = 1; // Valor padrão
-        let quantidadeItensGlobal = 3; // Valor padrão
-        let tipoBotaoGlobal = "texto"; // Valor padrão
+        let quantidadeBotoesGlobal = 0; // Valor inicial
+        let quantidadeItensGlobal = 0; // Valor inicial
+        let tipoBotaoGlobal = ""; // Valor inicial
 
         function montarJson() {
             const nomeTemplate = document.getElementById('nome-template').value;
             const textoPreBody = document.getElementById('texto-pre-body').value;
             const itens = [];
+
+            if (quantidadeBotoesGlobal === 0 || quantidadeItensGlobal === 0 || tipoBotaoGlobal === "") {
+                alert("Por favor, selecione uma opção válida para Quantidade de Botões, Tipo de Botão e Quantidade de Itens.");
+                return;
+            }
 
             for (let i = 1; i <= quantidadeItensGlobal; i++) {
                 const bodyItem = document.getElementById(`body-item-${i}`).value;
@@ -165,17 +170,32 @@
         }
 
         function atualizarQuantidadeBotoes() {
-            quantidadeBotoesGlobal = parseInt(document.getElementById('quantidade-botoes').value);
+            const quantidadeBotoes = parseInt(document.getElementById('quantidade-botoes').value);
+            if (quantidadeBotoes === 0) {
+                alert("Por favor, selecione uma opção válida para Quantidade de Botões.");
+                return;
+            }
+            quantidadeBotoesGlobal = quantidadeBotoes;
             adicionarItens(); // Atualiza os itens com a nova quantidade de botões
         }
 
         function atualizarQuantidadeItens() {
-            quantidadeItensGlobal = parseInt(document.getElementById('quantidade-itens').value);
+            const quantidadeItens = parseInt(document.getElementById('quantidade-itens').value);
+            if (quantidadeItens === 0) {
+                alert("Por favor, selecione uma opção válida para Quantidade de Itens.");
+                return;
+            }
+            quantidadeItensGlobal = quantidadeItens;
             adicionarItens(); // Atualiza os itens com a nova quantidade de itens
         }
 
         function atualizarTipoBotao() {
-            tipoBotaoGlobal = document.getElementById('tipo-botao').value;
+            const tipoBotao = document.getElementById('tipo-botao').value;
+            if (tipoBotao === "") {
+                alert("Por favor, selecione uma opção válida para Tipo de Botão.");
+                return;
+            }
+            tipoBotaoGlobal = tipoBotao;
             adicionarItens(); // Atualiza os itens com o novo tipo de botão
         }
 
@@ -195,12 +215,12 @@
         function limparCampos() {
             document.getElementById('nome-template').value = '';
             document.getElementById('texto-pre-body').value = '';
-            document.getElementById('quantidade-botoes').value = '1'; // Valor padrão
-            document.getElementById('tipo-botao').value = 'texto'; // Valor padrão
-            document.getElementById('quantidade-itens').value = '3'; // Valor padrão
-            quantidadeBotoesGlobal = 1; // Resetar a quantidade global de botões
-            quantidadeItensGlobal = 3; // Resetar a quantidade global de itens
-            tipoBotaoGlobal = "texto"; // Resetar o tipo de botão
+            document.getElementById('quantidade-botoes').value = '';
+            document.getElementById('tipo-botao').value = '';
+            document.getElementById('quantidade-itens').value = '';
+            quantidadeBotoesGlobal = 0; // Resetar a quantidade global de botões
+            quantidadeItensGlobal = 0; // Resetar a quantidade global de itens
+            tipoBotaoGlobal = ""; // Resetar o tipo de botão
             document.getElementById('container-itens').innerHTML = '';
             document.getElementById('resultado').textContent = '';
         }
@@ -216,17 +236,20 @@
             <label for="texto-pre-body">Texto do Pré Body:</label>
             <textarea id="texto-pre-body" rows="4" required></textarea><br>
             <label for="quantidade-botoes">Quantidade de Botões:</label>
-            <select id="quantidade-botoes" onchange="atualizarQuantidadeBotoes()">
+            <select id="quantidade-botoes" onchange="atualizarQuantidadeBotoes()" required>
+                <option value="">Escolha a opção</option>
                 <option value="1">1 Botão</option>
                 <option value="2">2 Botões</option>
             </select><br>
             <label for="tipo-botao">Tipo de Botão:</label>
-            <select id="tipo-botao" onchange="atualizarTipoBotao()">
+            <select id="tipo-botao" onchange="atualizarTipoBotao()" required>
+                <option value="">Escolha a opção</option>
                 <option value="texto">Texto</option>
                 <option value="link">Link</option>
             </select><br>
             <label for="quantidade-itens">Quantidade de Itens no Carrossel:</label>
-            <select id="quantidade-itens" onchange="atualizarQuantidadeItens()">
+            <select id="quantidade-itens" onchange="atualizarQuantidadeItens()" required>
+                <option value="">Escolha a opção</option>
                 <option value="3">3 Itens</option>
                 <option value="4">4 Itens</option>
                 <option value="5">5 Itens</option>
