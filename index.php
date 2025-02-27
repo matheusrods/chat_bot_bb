@@ -189,7 +189,7 @@
         function limparCampos() {
             document.getElementById('nome-template').value = '';
             document.getElementById('texto-pre-body').value = '';
-            document.getElementById('quantidade-itens').value = '3'; // Valor padrão
+            document.getElementById('quantidade-itens').value = '1'; // Valor padrão
             document.getElementById('container-itens').innerHTML = '';
             document.getElementById('resultado').textContent = '';
         }
@@ -204,8 +204,8 @@
             <input type="text" id="nome-template" required><br>
             <label for="texto-pre-body">Texto do Pré Body:</label>
             <textarea id="texto-pre-body" rows="4" required></textarea><br>
-            <label for="quantidade-itens">Quantidade de Itens no Carrossel (3-10):</label>
-            <input type="number" id="quantidade-itens" min="3" max="10" required onchange="adicionarItens()"><br>
+            <label for="quantidade-itens">Quantidade de Itens no Carrossel (1-10):</label>
+            <input type="number" id="quantidade-itens" min="1" max="10" required onchange="adicionarItens()"><br>
         </fieldset>
 
         <div id="container-itens"></div>
