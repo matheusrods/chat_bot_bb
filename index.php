@@ -64,26 +64,28 @@
         }
     </style>
     <script>
+        let quantidadeBotoesGlobal = 1; // Valor padrão
+        let quantidadeItensGlobal = 3; // Valor padrão
+        let tipoBotaoGlobal = "texto"; // Valor padrão
+
         function montarJson() {
             const nomeTemplate = document.getElementById('nome-template').value;
             const textoPreBody = document.getElementById('texto-pre-body').value;
-            const quantidadeItens = parseInt(document.getElementById('quantidade-itens').value);
             const itens = [];
 
-            for (let i = 1; i <= quantidadeItens; i++) {
+            for (let i = 1; i <= quantidadeItensGlobal; i++) {
                 const bodyItem = document.getElementById(`body-item-${i}`).value;
-                const quantidadeBotoes = parseInt(document.getElementById(`quantidade-botoes-${i}`).value) || 1; // Padrão: 1 botão
                 const buttons = [];
 
-                for (let j = 1; j <= quantidadeBotoes; j++) {
+                for (let j = 1; j <= quantidadeBotoesGlobal; j++) {
                     const botaoTexto = document.getElementById(`botao${j}-texto-${i}`).value;
-                    const botaoUrl = document.getElementById(`botao${j}-url-${i}`).value;
+                    const botaoUrl = tipoBotaoGlobal === "link" ? document.getElementById(`botao${j}-url-${i}`).value : null;
 
-                    if (botaoTexto && botaoUrl) {
+                    if (botaoTexto) {
                         buttons.push({
-                            type: "url",
+                            type: tipoBotaoGlobal === "link" ? "url" : "text",
                             text: botaoTexto,
-                            url: botaoUrl
+                            ...(tipoBotaoGlobal === "link" && { url: botaoUrl })
                         });
                     }
                 }
@@ -105,7 +107,7 @@
                         },
                         {
                             type: "buttons",
-                            buttons: buttons.length > 0 ? buttons : [{ type: "url", text: "Botão Padrão", url: "https://www.example.com" }] // Botão padrão se nenhum for preenchido
+                            buttons: buttons.length > 0 ? buttons : [{ type: "text", text: "Botão Padrão" }] // Botão padrão se nenhum for preenchido
                         }
                     ]
                 });
@@ -131,46 +133,50 @@
         }
 
         function adicionarItens() {
-            const quantidadeItens = parseInt(document.getElementById('quantidade-itens').value);
             const containerItens = document.getElementById('container-itens');
             containerItens.innerHTML = '';
 
-            for (let i = 1; i <= quantidadeItens; i++) {
+            for (let i = 1; i <= quantidadeItensGlobal; i++) {
                 const itemHTML = `
                     <fieldset>
                         <legend>Item ${i}</legend>
                         <label for="body-item-${i}">Texto do Item ${i}:</label>
                         <textarea id="body-item-${i}" rows="4" required></textarea><br>
-                        <label for="quantidade-botoes-${i}">Quantidade de Botões (1-2):</label>
-                        <select id="quantidade-botoes-${i}" onchange="atualizarBotoes(${i})">
-                            <option value="1">1 Botão</option>
-                            <option value="2">2 Botões</option>
-                        </select><br>
-                        <div id="botoes-container-${i}">
-                            <label for="botao1-texto-${i}">Texto do Botão 1:</label>
-                            <input type="text" id="botao1-texto-${i}"><br>
-                            <label for="botao1-url-${i}">URL do Botão 1:</label>
-                            <input type="url" id="botao1-url-${i}"><br>
-                        </div>
+                        ${gerarCamposBotoes(i)}
                     </fieldset>
                 `;
                 containerItens.insertAdjacentHTML('beforeend', itemHTML);
             }
         }
 
-        function atualizarBotoes(itemIndex) {
-            const quantidadeBotoes = parseInt(document.getElementById(`quantidade-botoes-${itemIndex}`).value);
-            const botoesContainer = document.getElementById(`botoes-container-${itemIndex}`);
-            botoesContainer.innerHTML = '';
-
-            for (let j = 1; j <= quantidadeBotoes; j++) {
-                botoesContainer.insertAdjacentHTML('beforeend', `
+        function gerarCamposBotoes(itemIndex) {
+            let campos = '';
+            for (let j = 1; j <= quantidadeBotoesGlobal; j++) {
+                campos += `
                     <label for="botao${j}-texto-${itemIndex}">Texto do Botão ${j}:</label>
                     <input type="text" id="botao${j}-texto-${itemIndex}"><br>
-                    <label for="botao${j}-url-${itemIndex}">URL do Botão ${j}:</label>
-                    <input type="url" id="botao${j}-url-${itemIndex}"><br>
-                `);
+                    ${tipoBotaoGlobal === "link" ? `
+                        <label for="botao${j}-url-${itemIndex}">URL do Botão ${j}:</label>
+                        <input type="url" id="botao${j}-url-${itemIndex}"><br>
+                    ` : ''}
+                `;
             }
+            return campos;
+        }
+
+        function atualizarQuantidadeBotoes() {
+            quantidadeBotoesGlobal = parseInt(document.getElementById('quantidade-botoes').value);
+            adicionarItens(); // Atualiza os itens com a nova quantidade de botões
+        }
+
+        function atualizarQuantidadeItens() {
+            quantidadeItensGlobal = parseInt(document.getElementById('quantidade-itens').value);
+            adicionarItens(); // Atualiza os itens com a nova quantidade de itens
+        }
+
+        function atualizarTipoBotao() {
+            tipoBotaoGlobal = document.getElementById('tipo-botao').value;
+            adicionarItens(); // Atualiza os itens com o novo tipo de botão
         }
 
         function copiarResultado() {
@@ -189,7 +195,12 @@
         function limparCampos() {
             document.getElementById('nome-template').value = '';
             document.getElementById('texto-pre-body').value = '';
-            document.getElementById('quantidade-itens').value = '1'; // Valor padrão
+            document.getElementById('quantidade-botoes').value = '1'; // Valor padrão
+            document.getElementById('tipo-botao').value = 'texto'; // Valor padrão
+            document.getElementById('quantidade-itens').value = '3'; // Valor padrão
+            quantidadeBotoesGlobal = 1; // Resetar a quantidade global de botões
+            quantidadeItensGlobal = 3; // Resetar a quantidade global de itens
+            tipoBotaoGlobal = "texto"; // Resetar o tipo de botão
             document.getElementById('container-itens').innerHTML = '';
             document.getElementById('resultado').textContent = '';
         }
@@ -204,8 +215,27 @@
             <input type="text" id="nome-template" required><br>
             <label for="texto-pre-body">Texto do Pré Body:</label>
             <textarea id="texto-pre-body" rows="4" required></textarea><br>
-            <label for="quantidade-itens">Quantidade de Itens no Carrossel (1-10):</label>
-            <input type="number" id="quantidade-itens" min="1" max="10" required onchange="adicionarItens()"><br>
+            <label for="quantidade-botoes">Quantidade de Botões:</label>
+            <select id="quantidade-botoes" onchange="atualizarQuantidadeBotoes()">
+                <option value="1">1 Botão</option>
+                <option value="2">2 Botões</option>
+            </select><br>
+            <label for="tipo-botao">Tipo de Botão:</label>
+            <select id="tipo-botao" onchange="atualizarTipoBotao()">
+                <option value="texto">Texto</option>
+                <option value="link">Link</option>
+            </select><br>
+            <label for="quantidade-itens">Quantidade de Itens no Carrossel:</label>
+            <select id="quantidade-itens" onchange="atualizarQuantidadeItens()">
+                <option value="3">3 Itens</option>
+                <option value="4">4 Itens</option>
+                <option value="5">5 Itens</option>
+                <option value="6">6 Itens</option>
+                <option value="7">7 Itens</option>
+                <option value="8">8 Itens</option>
+                <option value="9">9 Itens</option>
+                <option value="10">10 Itens</option>
+            </select><br>
         </fieldset>
 
         <div id="container-itens"></div>
