@@ -62,19 +62,29 @@
             border: 1px solid #ddd;
             overflow: auto;
         }
+        .hidden {
+            display: none;
+        }
     </style>
     <script>
         let quantidadeBotoesGlobal = 0; // Valor inicial
         let quantidadeItensGlobal = 0; // Valor inicial
-        let tipoBotaoGlobal = ""; // Valor inicial
+        let tipoBotao1Global = ""; // Valor inicial
+        let tipoBotao2Global = ""; // Valor inicial
 
         function montarJson() {
             const nomeTemplate = document.getElementById('nome-template').value;
             const textoPreBody = document.getElementById('texto-pre-body').value;
+
+            // Validação dos campos
+            if (!validarCampos(nomeTemplate, textoPreBody)) {
+                return;
+            }
+
             const itens = [];
 
-            if (quantidadeBotoesGlobal === 0 || quantidadeItensGlobal === 0 || tipoBotaoGlobal === "") {
-                alert("Por favor, selecione uma opção válida para Quantidade de Botões, Tipo de Botão e Quantidade de Itens.");
+            if (quantidadeBotoesGlobal === 0 || quantidadeItensGlobal === 0) {
+                alert("Por favor, selecione uma opção válida para Quantidade de Botões e Quantidade de Itens.");
                 return;
             }
 
@@ -82,15 +92,31 @@
                 const bodyItem = document.getElementById(`body-item-${i}`).value;
                 const buttons = [];
 
+                if (bodyItem.length > 160) {
+                    alert(`O texto do item ${i} excede o limite de 160 caracteres.`);
+                    return;
+                }
+
                 for (let j = 1; j <= quantidadeBotoesGlobal; j++) {
                     const botaoTexto = document.getElementById(`botao${j}-texto-${i}`).value;
-                    const botaoUrl = tipoBotaoGlobal === "link" ? document.getElementById(`botao${j}-url-${i}`).value : null;
+                    const tipoBotao = j === 1 ? tipoBotao1Global : tipoBotao2Global;
+                    const botaoUrl = tipoBotao === "link" ? document.getElementById(`botao${j}-url-${i}`).value : null;
+
+                    if (botaoTexto.length > 25) {
+                        alert(`O texto do botão ${j} no item ${i} excede o limite de 25 caracteres.`);
+                        return;
+                    }
+
+                    if (tipoBotao === "link" && botaoUrl.length > 2000) {
+                        alert(`A URL do botão ${j} no item ${i} excede o limite de 2000 caracteres.`);
+                        return;
+                    }
 
                     if (botaoTexto) {
                         buttons.push({
-                            type: tipoBotaoGlobal === "link" ? "url" : "text",
+                            type: tipoBotao === "link" ? "url" : "text",
                             text: botaoTexto,
-                            ...(tipoBotaoGlobal === "link" && { url: botaoUrl })
+                            ...(tipoBotao === "link" && { url: botaoUrl })
                         });
                     }
                 }
@@ -137,6 +163,20 @@
             document.getElementById('resultado').textContent = JSON.stringify(json, null, 4);
         }
 
+        function validarCampos(nomeTemplate, textoPreBody) {
+            if (nomeTemplate.length > 512) {
+                alert("O nome do template excede o limite de 512 caracteres.");
+                return false;
+            }
+
+            if (textoPreBody.length > 1024) {
+                alert("O texto do pré-body excede o limite de 1024 caracteres.");
+                return false;
+            }
+
+            return true;
+        }
+
         function adicionarItens() {
             const containerItens = document.getElementById('container-itens');
             containerItens.innerHTML = '';
@@ -157,12 +197,13 @@
         function gerarCamposBotoes(itemIndex) {
             let campos = '';
             for (let j = 1; j <= quantidadeBotoesGlobal; j++) {
+                const tipoBotao = j === 1 ? tipoBotao1Global : tipoBotao2Global;
                 campos += `
                     <label for="botao${j}-texto-${itemIndex}">Texto do Botão ${j}:</label>
-                    <input type="text" id="botao${j}-texto-${itemIndex}"><br>
-                    ${tipoBotaoGlobal === "link" ? `
+                    <input type="text" id="botao${j}-texto-${itemIndex}" required><br>
+                    ${tipoBotao === "link" ? `
                         <label for="botao${j}-url-${itemIndex}">URL do Botão ${j}:</label>
-                        <input type="url" id="botao${j}-url-${itemIndex}"><br>
+                        <input type="url" id="botao${j}-url-${itemIndex}" required><br>
                     ` : ''}
                 `;
             }
@@ -176,6 +217,7 @@
                 return;
             }
             quantidadeBotoesGlobal = quantidadeBotoes;
+            atualizarCamposTipoBotao(); // Atualiza os campos de tipo de botão
             adicionarItens(); // Atualiza os itens com a nova quantidade de botões
         }
 
@@ -189,13 +231,44 @@
             adicionarItens(); // Atualiza os itens com a nova quantidade de itens
         }
 
-        function atualizarTipoBotao() {
-            const tipoBotao = document.getElementById('tipo-botao').value;
-            if (tipoBotao === "") {
-                alert("Por favor, selecione uma opção válida para Tipo de Botão.");
-                return;
+        function atualizarCamposTipoBotao() {
+            const containerTipoBotao = document.getElementById('container-tipo-botao');
+            containerTipoBotao.innerHTML = '';
+
+            if (quantidadeBotoesGlobal === 1) {
+                containerTipoBotao.innerHTML = `
+                    <label for="tipo-botao-1">Tipo do Botão 1:</label>
+                    <select id="tipo-botao-1" onchange="atualizarTipoBotao1()" required>
+                        <option value="">Escolha a opção</option>
+                        <option value="texto">Texto</option>
+                        <option value="link">Link</option>
+                    </select><br>
+                `;
+            } else if (quantidadeBotoesGlobal === 2) {
+                containerTipoBotao.innerHTML = `
+                    <label for="tipo-botao-1">Tipo do Botão 1:</label>
+                    <select id="tipo-botao-1" onchange="atualizarTipoBotao1()" required>
+                        <option value="">Escolha a opção</option>
+                        <option value="texto">Texto</option>
+                        <option value="link">Link</option>
+                    </select><br>
+                    <label for="tipo-botao-2">Tipo do Botão 2:</label>
+                    <select id="tipo-botao-2" onchange="atualizarTipoBotao2()" required>
+                        <option value="">Escolha a opção</option>
+                        <option value="texto">Texto</option>
+                        <option value="link">Link</option>
+                    </select><br>
+                `;
             }
-            tipoBotaoGlobal = tipoBotao;
+        }
+
+        function atualizarTipoBotao1() {
+            tipoBotao1Global = document.getElementById('tipo-botao-1').value;
+            adicionarItens(); // Atualiza os itens com o novo tipo de botão
+        }
+
+        function atualizarTipoBotao2() {
+            tipoBotao2Global = document.getElementById('tipo-botao-2').value;
             adicionarItens(); // Atualiza os itens com o novo tipo de botão
         }
 
@@ -216,11 +289,12 @@
             document.getElementById('nome-template').value = '';
             document.getElementById('texto-pre-body').value = '';
             document.getElementById('quantidade-botoes').value = '';
-            document.getElementById('tipo-botao').value = '';
             document.getElementById('quantidade-itens').value = '';
             quantidadeBotoesGlobal = 0; // Resetar a quantidade global de botões
             quantidadeItensGlobal = 0; // Resetar a quantidade global de itens
-            tipoBotaoGlobal = ""; // Resetar o tipo de botão
+            tipoBotao1Global = ""; // Resetar o tipo do botão 1
+            tipoBotao2Global = ""; // Resetar o tipo do botão 2
+            document.getElementById('container-tipo-botao').innerHTML = '';
             document.getElementById('container-itens').innerHTML = '';
             document.getElementById('resultado').textContent = '';
         }
@@ -241,12 +315,7 @@
                 <option value="1">1 Botão</option>
                 <option value="2">2 Botões</option>
             </select><br>
-            <label for="tipo-botao">Tipo de Botão:</label>
-            <select id="tipo-botao" onchange="atualizarTipoBotao()" required>
-                <option value="">Escolha a opção</option>
-                <option value="texto">Texto</option>
-                <option value="link">Link</option>
-            </select><br>
+            <div id="container-tipo-botao"></div>
             <label for="quantidade-itens">Quantidade de Itens no Carrossel:</label>
             <select id="quantidade-itens" onchange="atualizarQuantidadeItens()" required>
                 <option value="">Escolha a opção</option>
